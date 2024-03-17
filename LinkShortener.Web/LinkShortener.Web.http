@@ -1,0 +1,11 @@
+@LinkShortener.Web_HostAddress = http://localhost:5130
+
+GET {{LinkShortener.Web_HostAddress}}/api/ShortLink/qrlink/
+Accept: application/json
+###
+
+GET {{LinkShortener.Web_HostAddress}}/api/ShortLink/textlink
+Accept: application/json
+###
+
+

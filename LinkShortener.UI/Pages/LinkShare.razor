@@ -1,0 +1,157 @@
+﻿@page "/linkshare"
+@using LinkShortener.UI.Services
+@using BlazorBootstrap
+@using System.ComponentModel.DataAnnotations
+
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+        padding-left: 5px;
+    }
+</style>
+
+<PageTitle>Linkshare</PageTitle>
+
+<h1>Share link</h1>
+
+@if (link == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmitAsync">
+        <DataAnnotationsValidator />
+        
+        <div class="form-group row mb-3">
+            <label class="col-sm-1 col-form-label">Text</label>
+            <div class="col-sm-1">
+                <Switch Class="mt-2" @bind-Value="link.Format"  />
+            </div>
+            <label class="col-sm-1 col-form-label">QR</label>
+        </div>
+        
+        <div class="form-group row mb-3">
+            <div class="col-sm-6">
+                <div class="input-group">
+                    <span class="input-group-text" id="basic-addon1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link" viewBox="0 0 16 16">
+                            <path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9q-.13 0-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"></path>
+                            <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4 4 0 0 1-.82 1H12a3 3 0 1 0 0-6z"></path>
+                        </svg>
+                    </span>
+                    <InputText class="form-control mr-1" @bind-Value="link.OriginalUrl"/>
+                    <ValidationMessage For="@(() => link.OriginalUrl)"/>
+                </div>
+            </div>
+        </div>
+        
+         <div class="form-group row mb-3">
+             <div class="col-sm-6">
+                 <label class="col-sm-1 col-form-label">Sortlink</label>
+                 <InputText class="form-control mr-1" @bind-Value="link.ShortUrl" disabled="@DisableReturnField()"/>
+             </div>
+         </div>
+
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2" Disabled="disableSave">Save</Button>
+            </div>
+        </div>
+    </EditForm>
+}
+
+@code {
+    private Link link = new();
+    private EditContext? editContext;
+    private bool disableSave;
+    [Inject] IShortenerService shortenerService { get; set; } = default!;
+    [Inject] private ToastService _toastService { get; set; } = default!;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        link = new()
+        {
+            OriginalUrl = String.Empty,
+            Format = false
+        };
+        editContext = new EditContext(link);
+        editContext.OnFieldChanged += HandleFieldChanged!;
+        await base.OnInitializedAsync();
+    }
+    
+    public async void HandleOnValidSubmitAsync()
+    {
+        if (link.OriginalUrl != null)
+        {
+            var shortLink = await shortenerService.ShareLink(link.OriginalUrl, link.Format,default);
+
+            if (shortLink is not null)
+            {
+                var toastMessage = new ToastMessage
+                {
+                    Title = "Link shortener",
+                    Message = $"The link was shortened successfully.",
+                    AutoHide = true,
+                    Type = ToastType.Success,
+                    IconName = IconName.CheckCircleFill,
+                };
+
+                _toastService.Notify(toastMessage);
+            }
+        }
+    }
+    
+    private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        disableSave = !(editContext?.Validate() ?? false);
+
+        var toastMessage = new ToastMessage
+        {
+            Title = "Field Changed Notification",
+            Message = $"The field \"{e.FieldIdentifier.FieldName}\" was changed.",
+            AutoHide = true,
+            Type = ToastType.Info
+        };
+
+        _toastService.Notify(toastMessage);
+    }
+
+    private void ResetForm()
+    {
+        link = new();
+        editContext = new EditContext(link);
+        editContext.OnFieldChanged += HandleFieldChanged!;
+    }
+
+    private bool DisableReturnField()
+    {
+        return link.ShortUrl == null;
+    }
+    
+    
+    public class Link
+    {
+        [Required(ErrorMessage = "Original url is required.")]
+        public string? OriginalUrl { get; set; }
+
+        public string? ShortUrl { get; set; }
+
+        [Required]
+        public bool Format { get; set; } = false;
+        
+        public string? Username { get; set; }
+    }
+}
