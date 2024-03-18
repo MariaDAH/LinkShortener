@@ -1,5 +1,4 @@
-﻿using System.Net.Mime;
-using LinkShortener.Application.Models;
+﻿using LinkShortener.Application.Models;
 using LinkShortener.Application.Services;
 
 namespace LinkShortener.Infrastructure.Services;
@@ -22,6 +21,7 @@ public class ShortenerService(IUnitOfWork unitOfWork, IUserService userService) 
     public async Task<string> AddShortLink(string originalUrl, string userName, CancellationToken cancellationToken)
     {
         var user = await userService.GetUserByNameOrEmail(userName, null);
+        if (user is null) throw new Exception("Non recognised user"); //ToDo: Consider creating custom exceptions.
         var resource = Url.Create(originalUrl, user);
         var uow = unitOfWork.GetRepository<Url>();
         await uow.AddAsync(resource);

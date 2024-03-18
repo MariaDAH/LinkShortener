@@ -5,7 +5,7 @@ using LinkShortener.Application.Models.Dtos;
 namespace LinkShortener.Application.Services;
 
 [JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
-public class QrLink(Url url) : ILink
+public class QrLink(Url url) : ILink //, IOtherService
 {
     public async Task<LinkDto> ConvertLink()
     {
@@ -17,4 +17,6 @@ public class QrLink(Url url) : ILink
     {
         return new LinkDto();
     }
+    
+    //Implement a method of the OtherService, which is a client for a third party system that generates the QR??
 }
