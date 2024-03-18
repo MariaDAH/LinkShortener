@@ -1,6 +1,10 @@
-﻿namespace LinkShortener.Web.Services;
+﻿using LinkShortener.Application.Models;
+using LinkShortener.Application.Models.Dtos;
+using LinkShortener.Application.Services;
+
+namespace LinkShortener.Web.Services;
 
 public interface ILinkConverterCommand
 {
-    public Task ShareLink(string inputYrl, int format);
+    public Task<LinkDto> ShareLink(Url url, int format);
 }

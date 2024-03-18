@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using LinkShortener.Application.Models.Dtos;
 
 namespace LinkShortener.Application.Services;
 
@@ -6,6 +7,6 @@ namespace LinkShortener.Application.Services;
 [JsonDerivedType(typeof(Link))]
 public interface ILink
 {
-    public Task<ILink> ConvertLink();
+    public Task<LinkDto> ConvertLink();
     
 }

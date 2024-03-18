@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization.Metadata;
 using LinkShortener.Application.Services;
 using LinkShortener.Infrastructure.Daos;
 using LinkShortener.Infrastructure.Services;
@@ -9,17 +7,15 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options =>
+builder.Services.AddCors(opts => opts.AddDefaultPolicy(bld => // <-- added this
 {
-    options.AddPolicy("CorsPolicy",
-        policy  =>
-        {
-            policy.WithOrigins("http://localhost:5087/",
-                    "https://localhost:7175")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
-});
+    bld
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .WithExposedHeaders("*")
+        ;
+}));
 
 builder.Services.AddLogging(logging => logging.AddConsole());
 
@@ -53,7 +49,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("CorsPolicy");
+app.UseCors();
 app.MapControllers();
 
 app.Run();

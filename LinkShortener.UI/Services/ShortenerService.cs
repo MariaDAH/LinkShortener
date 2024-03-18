@@ -18,22 +18,28 @@ public class ShortenerService(HttpClient httpClient, IConfiguration configuratio
             Format = format
         };
         
-        var request = new HttpRequestMessage(HttpMethod.Post, $"shortlink/link?original_url={body.OriginalUrl}&userName={body.Username}");
+        var request = new HttpRequestMessage(HttpMethod.Post, $"shortlink/link?originalUrl={body.OriginalUrl}&userName={body.Username}");
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         request.Headers.Add("X-API-Key", apiKey);
         
-        var response = await httpClient.SendAsync(request, cancellationToken);
+        var response = await httpClient.SendAsync(request, cancellationToken); 
         response.EnsureSuccessStatusCode();
             
         var responseContent = await response.Content.ReadAsStringAsync(cancellationToken) ?? String.Empty;
-        return JsonSerializer.Deserialize<LinkShare.Link>(responseContent);
+
+        return await ConvertToFormatAsync(responseContent, Convert.ToInt32(format));
     }
     
-    public async Task<LinkShare.Link?> BrowseShortLink(string url, bool option, CancellationToken cancellationToken = default)
+    public async Task BrowseShortLink(string url, bool option, CancellationToken cancellationToken = default)
     {
-        var response = await httpClient.GetAsync($"shortlink/link?url={url}&option={option}", cancellationToken);
+        //Open original location on browser
+    }
+
+    private async Task<LinkShare.Link?> ConvertToFormatAsync(string hash, int format)
+    {
+        var response = await httpClient.GetAsync($"shortlink/link?hash={hash}&option={format}");
         response.EnsureSuccessStatusCode();
-        var responseContent = response.Content.ReadAsStringAsync(cancellationToken).Result ?? String.Empty;
+        var responseContent = response.Content.ReadAsStringAsync().Result ?? String.Empty;
         return JsonSerializer.Deserialize<LinkShare.Link>(responseContent);
     }
 }

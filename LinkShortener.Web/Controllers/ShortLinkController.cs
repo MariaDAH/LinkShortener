@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text.Json;
-using LinkShortener.Application.Services;
+using System.Text.Json.Serialization;
 using LinkShortener.Infrastructure.Services;
 using LinkShortener.Web.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +19,7 @@ public class ShortLinkController(IApiKeyValidation apiKeyValidation,
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetLink(
-        [FromQuery] string url,
+        [FromQuery] string hash,
         [FromQuery] int option,
         [EnumeratorCancellation]  CancellationToken cancellationToken = default)
     {
@@ -28,14 +28,15 @@ public class ShortLinkController(IApiKeyValidation apiKeyValidation,
             return BadRequest(ModelState);
         }
         
-        var shortUrl = await shortenerService.GetShortLink(url, cancellationToken);
-        if (shortUrl is null)
+        var link = await shortenerService.GetLink(hash, cancellationToken);
+        if (link is null)
         {
             return NotFound();
         }
         
-        await commandService.ShareLink(shortUrl, option);
-        return Ok();
+        var formattedLink = await commandService.ShareLink(link, option);
+        var response = JsonSerializer.Serialize(formattedLink);
+        return Content(response);
     }
     
     /// <summary>
@@ -52,7 +53,7 @@ public class ShortLinkController(IApiKeyValidation apiKeyValidation,
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> PostLink(
         [FromHeader(Name="X-Api-Key")] string apikey, 
-        [FromQuery] string original_url, 
+        [FromQuery] string originalUrl, 
         [FromQuery] string userName, 
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -65,9 +66,9 @@ public class ShortLinkController(IApiKeyValidation apiKeyValidation,
         if (!isValid)
             return Unauthorized();
 
-        await shortenerService.AddShortLink(original_url, userName, cancellationToken);
+        var shortLink= await shortenerService.AddShortLink(originalUrl, userName, cancellationToken);
         
-        return Ok();
+        return Content(shortLink);
     }
     
     [HttpPut("link")]

@@ -1,19 +1,29 @@
 ﻿using System.Text.Json.Serialization;
+using LinkShortener.Application.Models;
+using LinkShortener.Application.Models.Dtos;
 
 namespace LinkShortener.Application.Services;
 
 [JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
-public class TextLink(string link) : ILink
+public class TextLink(Url url) : ILink
 {
-    public async Task<ILink> ConvertLink()
+    private const string URLDOMAIN = "http://shorturl/";
+    
+    public async Task<LinkDto> ConvertLink()
     {
-        Console.WriteLine($"Link {link} converted to text.");
-        return new TextLink(link);
+        return await new TextLink(url).ReturnLink(url);
     }
 
-    /*private TestLink()
+    private async Task<LinkDto> ReturnLink(Url url)
     {
-         string text = File.ReadAllText(@"./person.json");
-         var person = JsonSerializer.Deserialize<>(text);
-    }*/
+        var shortUrl = string.Concat(URLDOMAIN, url.Hash);
+        Console.WriteLine($"Link {url.OriginalUrl} converted to text: {shortUrl}");
+        
+        return new LinkDto
+        {
+            ShortUrl = shortUrl,
+            Hash = url.Hash,
+            Location = url.OriginalUrl
+        };
+    }
 }
