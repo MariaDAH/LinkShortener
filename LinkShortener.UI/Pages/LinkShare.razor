@@ -1,6 +1,5 @@
 ﻿@page "/linkshare"
 @using LinkShortener.UI.Services
-@using BlazorBootstrap
 @using System.ComponentModel.DataAnnotations
 
 <style>
@@ -22,14 +21,18 @@
 
 <h1>Share link</h1>
 
-@if (link == null)
-{
-    <p>
-        <em>Loading...</em>
-    </p>
+
+@if (link == null) {
+    <div class="d-flex justify-content-center">
+        <Spinner Type="SpinnerType.Border" Size="SpinnerSize.Large"/>
+    </div>
+} 
+else if (errorMessage != null) {
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
 }
-else
-{
+else {
     <EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmitAsync">
         <DataAnnotationsValidator />
         
@@ -56,10 +59,10 @@ else
             </div>
         </div>
         
-         <div class="form-group row mb-3">
-             <div class="col-sm-6">
-                 <label class="col-sm-1 col-form-label">Sortlink</label>
-                 <InputText class="form-control mr-1" @bind-Value="link.ShortUrl" disabled="@DisableReturnField()"/>
+         <div class="form-group row mb-3" hidden="@DisableReturnField()">
+             <div class="col-sm-6 input-group">
+                <label class="col-sm-1 col-form-label">Shortlink:</label>
+                <a href="@link.OriginalUrl" target="_blank" class="mt-2">@link.ShortUrl</a>
              </div>
          </div>
 
@@ -73,9 +76,12 @@ else
 }
 
 @code {
+    private bool showContent = true;
     private Link link = new();
     private EditContext? editContext;
     private bool disableSave;
+    private string errorMessage;
+    
     [Inject] IShortenerService shortenerService { get; set; } = default!;
     [Inject] private ToastService _toastService { get; set; } = default!;
 
@@ -94,12 +100,14 @@ else
     
     public async void HandleOnValidSubmitAsync()
     {
-        if (link.OriginalUrl != null)
+        try
         {
-            var shortLink = await shortenerService.ShareLink(link.OriginalUrl, link.Format,default);
+            var shortLink = await shortenerService.ShareLink(link.OriginalUrl, link.Format, default);
 
-            if (shortLink is not null)
+            if (shortLink is not null && shortLink.ShortUrl != null)
             {
+                link.ShortUrl = shortLink.ShortUrl;
+                
                 var toastMessage = new ToastMessage
                 {
                     Title = "Link shortener",
@@ -111,22 +119,31 @@ else
 
                 _toastService.Notify(toastMessage);
             }
+            else
+            {
+                var toastMessage = new ToastMessage
+                {
+                    Title = "Link not shared",
+                    Message = $"The link cannot be shared.",
+                    AutoHide = true,
+                    Type = ToastType.Danger,
+                    IconName = IconName.CheckCircleFill,
+                };
+
+                _toastService.Notify(toastMessage);
+            }
+            ReloadComponent();        
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            ReloadComponent();
         }
     }
     
     private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
     {
         disableSave = !(editContext?.Validate() ?? false);
-
-        var toastMessage = new ToastMessage
-        {
-            Title = "Field Changed Notification",
-            Message = $"The field \"{e.FieldIdentifier.FieldName}\" was changed.",
-            AutoHide = true,
-            Type = ToastType.Info
-        };
-
-        _toastService.Notify(toastMessage);
     }
 
     private void ResetForm()
@@ -139,8 +156,13 @@ else
     private bool DisableReturnField()
     {
         return link.ShortUrl == null;
-    }
+    } 
     
+    
+    private void ReloadComponent()
+    {
+        StateHasChanged();
+    }
     
     public class Link
     {

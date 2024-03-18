@@ -2,33 +2,52 @@
 'https://plantuml.com/component-diagram
 
 
-package "Some Group" {
-  HTTP - [First Component]
-  [Another Component]
+package "UI" {
+  [ShortenerService]
 }
 
-node "Other Groups" {
-  FTP - [Second Component]
-  [First Component] --> FTP
+package "Web Api" {
+  HTTP - [ShortLinkController]
+  [ShortLinkController] --> [ILinkConverterCommand]
 }
 
-cloud {
-  [Example 1]
+package "Infrastructure" {
+   [ConverterService] 
+   [ShortenerService.Infra] --> [UserService]
+   [ShortenerService.Infra] --> [Uow]
+   [UserService] --> [Uow]
+   frame DataAccess {
+    [Uow] -->  [Repositories]
+    [Uow] --> [ApplicationDbContext]
+   }
+}
+
+package "Application logic" {
+    frame Services {
+        [ILink] --> [QrLink]
+        [ILink] --> [TextLink]
+    }
+    frame Entities {
+      [Url]
+      [User]
+    }
+    frame Dto {
+      [LinkDto]
+    }
 }
 
 
-database "MySql" {
-  folder "This is my folder" {
-    [Folder 3]
+database "SqlServer" {
+  frame "LinkShortenerDb" {
+    [Url]
+    [User]
   }
-  frame "Foo" {
-    [Frame 4]
-  }
 }
 
 
-[Another Component] --> [Example 1]
-[Example 1] --> [Folder 3]
-[Folder 3] --> [Frame 4]
-
+[ShortenerService] --> [ShortLinkController]
+[DataAccess] --> [LinkShortenerDb]
+[ILinkConverterCommand] --> [ConverterService]
+[ConverterService] --> [ILink]
+[ShortLinkController] --> [ShortenerService.Infra]
 @enduml

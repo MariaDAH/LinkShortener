@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using LinkShortener.Infrastructure.Services;
 using LinkShortener.Web.Services;
 using Microsoft.AspNetCore.Mvc;

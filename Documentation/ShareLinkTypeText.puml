@@ -1,0 +1,20 @@
+﻿@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+UserUI -> ShortenerService.UI: ShareLink request(urlOrigin, option)
+ShortenerService.UI --> ShareLinkController: PostLink(API-KEY, urlOrigin, user)
+ShareLinkController --> ShortenerService.Infra: CreateLink(urlOrigin, user, date creation, expirationDate) 
+ShortenerService.Infra --> LinkShortenerDb: Insert link 
+ShortenerService.Infra <-- LinkShortenerDb: Return hash
+ShareLinkController <-- ShortenerService.Infra: Return hash
+ShortenerService.UI <-- ShareLinkController: Return hash
+ShortenerService.UI --> LinkConverterCommand: Share link(url, format)
+LinkConverterCommand --> ConverterService: ConvertLink()
+ConverterService --> ILinkTextLink: CreateLink(url)
+ConverterService <-- ILinkTextLink: Return LinkDto
+LinkConverterCommand <-- ConverterService: Return LinkDto
+ShortenerService.UI <-- LinkConverterCommand: Return LinkDto
+UserUI <-- ShortenerService.UI: Display hyperlink
+@enduml
