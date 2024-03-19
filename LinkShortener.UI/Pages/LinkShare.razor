@@ -59,12 +59,24 @@ else {
             </div>
         </div>
         
-         <div class="form-group row mb-3" hidden="@DisableReturnField()">
-             <div class="col-sm-6 input-group">
-                <label class="col-sm-1 col-form-label">Shortlink:</label>
-                <a href="@link.OriginalUrl" target="_blank" class="mt-2">@link.ShortUrl</a>
-             </div>
-         </div>
+        @if (@displayQR)
+        {
+            <div class="form-group row mb-3" hidden="@DisableReturnField()">
+                <div class="col-sm-6 input-group">
+                    <label class="col-sm-1 col-form-label">Shortlink:</label>
+                    <a href="@link.OriginalUrl" target="_blank" class="mt-2">@link.ShortUrl</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group row mb-3" hidden="@DisableReturnField()">
+                <div class="col-sm-6 input-group">
+                    <label class="col-sm-1 col-form-label">QR:</label>
+                    <img src="@link.ShortUrl" alt="QR" title="" />
+                </div>
+            </div>
+        }
 
         <div class="row">
             <div class="col-md-12 text-right">
@@ -81,6 +93,7 @@ else {
     private EditContext? editContext;
     private bool disableSave;
     private string errorMessage;
+    private bool displayQR = false;
     
     [Inject] IShortenerService shortenerService { get; set; } = default!;
     [Inject] private ToastService _toastService { get; set; } = default!;
@@ -107,6 +120,7 @@ else {
             if (shortLink is not null && shortLink.ShortUrl != null)
             {
                 link.ShortUrl = shortLink.ShortUrl;
+                displayQR = link.Format;
                 
                 var toastMessage = new ToastMessage
                 {
@@ -163,7 +177,12 @@ else {
     {
         StateHasChanged();
     }
-    
+
+    private string ConvertToBase64String(byte[] imageBytes)
+    {
+        return Convert.ToBase64String(imageBytes);
+    }
+
     public class Link
     {
         [Required(ErrorMessage = "Original url is required.")]
@@ -175,5 +194,7 @@ else {
         public bool Format { get; set; } = false;
         
         public string? Username { get; set; }
+
+        //public byte[] Image { get; set; } = new byte[]{};
     }
 }

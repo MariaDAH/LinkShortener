@@ -5,8 +5,10 @@ using LinkShortener.Application.Models.Dtos;
 namespace LinkShortener.Application.Services;
 
 [JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToBaseType)]
-public class QrLink(Url url) : ILink //, IOtherService
+public class QrLink(Url url) : ILink
 {
+    private readonly IQRGeneratorService _qrGeneratorService = new QRGeneratorService(new HttpClient());
+    
     public async Task<LinkDto> ConvertLink()
     {
         Console.WriteLine($"Link {url.OriginalUrl} converted to QR.");
@@ -15,8 +17,12 @@ public class QrLink(Url url) : ILink //, IOtherService
     
     private async Task<LinkDto> ReturnLink(Url url)
     {
-        return new LinkDto();
+        var result = await _qrGeneratorService.GenerateQRService(url.OriginalUrl, CancellationToken.None);
+        return new LinkDto
+        {
+            ShortUrl = result,
+            Hash = url.Hash,
+            Location = url.OriginalUrl,
+        };;
     }
-    
-    //Implement a method of the OtherService, which is a client for a third party system that generates the QR??
 }

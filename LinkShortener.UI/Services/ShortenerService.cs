@@ -26,7 +26,7 @@ public class ShortenerService(HttpClient httpClient, IConfiguration configuratio
         
             var response = await httpClient.SendAsync(request, cancellationToken); 
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken) ?? String.Empty;
-            //response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
             
             return await ConvertToFormatAsync(responseContent, Convert.ToInt32(format));
         }
@@ -39,7 +39,7 @@ public class ShortenerService(HttpClient httpClient, IConfiguration configuratio
     {
         var response = await httpClient.GetAsync($"shortlink/link?hash={hash}&option={format}"); ;
         var responseContent = response.Content.ReadAsStringAsync().Result ?? String.Empty;
-        //response.EnsureSuccessStatusCode();
+        response.EnsureSuccessStatusCode();
         return JsonSerializer.Deserialize<LinkShare.Link>(responseContent);
     }
 }

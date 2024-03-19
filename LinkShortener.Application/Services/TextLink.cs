@@ -24,7 +24,6 @@ public class TextLink(Url url) : ILink
             ShortUrl = shortUrl,
             Hash = url.Hash,
             Location = url.OriginalUrl,
-            Image = null
         };
     }
 }

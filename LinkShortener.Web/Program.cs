@@ -7,14 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(opts => opts.AddDefaultPolicy(bld => // <-- added this
+builder.Services.AddCors(opts => opts.AddDefaultPolicy(bld =>
 {
     bld
         .AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader()
-        .WithExposedHeaders("*")
-        ;
+        .WithExposedHeaders("*");
 }));
 
 builder.Services.AddLogging(logging => logging.AddConsole());
@@ -24,7 +23,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
-//ToDo: Move data access configuration to infrastructure component and remove ef dependencies in this project
 builder.Services.AddDbContext<ApplicationDbContext>(opts =>
 {
     opts.UseSqlServer(builder.Configuration["ConnectionStrings:LinkShortener"]);
