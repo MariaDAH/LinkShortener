@@ -59,7 +59,7 @@ else {
             </div>
         </div>
         
-        @if (@displayQR)
+        @if (!link.Format)
         {
             <div class="form-group row mb-3" hidden="@DisableReturnField()">
                 <div class="col-sm-6 input-group">
