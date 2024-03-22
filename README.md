@@ -26,4 +26,5 @@ Sequence:
 It was considered using cache database like Redis to store non used hash keys. In reality, I would like to create a separate servide to generate the hash, using a hashAlgoritm but because of limited time I just relied on EF documentation and assuming a property annotated with [key] will be unique.
 ```A key serves as a unique identifier for each entity instance. Most entities in EF have a single key, which maps to the concept of a primary key in relational databases (for entities without keys, see Keyless entities). Entities can have additional keys beyond the primary key (see Alternate Keys for more information).```
 However, looking at SQL server schema definition of the table generated using a code first approach, looks like EF is not generating such a key with any of the known mechanisms for generating subrrogate keys. In this case I was expenting see a PK generated with a UNIQUEIDENTIFIER mechanism but is not the case. Nonetheless please assume the PK will be generated uniquely. 
-  
+## UI 
+<img width="428" alt="image" src="https://github.com/MariaDAH/LinkShortener/assets/5183628/96fd4481-8d96-42a7-a191-f9ce6903c282">
