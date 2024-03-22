@@ -1,0 +1,11 @@
+﻿@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+3rdPartyApplication -> IdentityShortenerServer: send x-api-key header 
+3rdPartyApplication <-- IdentityShortenerServer: {access_token, expirationtimestamp, scope, token type: Bearer}
+
+3rdPartyApplication --> WebApi: Bearer access_token
+
+@enduml

@@ -1,0 +1,31 @@
+﻿@startwbs
+'https://plantuml.com/wbs-diagram
+
+* Shortener work breakdown
+** Design principal use case scenario: Common "Share link" button 
+*** Decide formats for sharing a link: QR and Text
+*** Determine main actors frontend: User(Browser/Client app), System(Web API)
+*** Determine communication protocols frontend: HTTP/ HTTPS
+*** Determine authentication protocol: OAuth 2. API developer Key of a reg account, used throttle users base on their allocated quota.
+*** infrastructure requirements. key storage size, number of calls per minute expected (throughput)
+*** Caching tecniques.  
+
+** Tech choice phase and business model phase (.NET Core)
+*** Client app: Blazor web assembly standalone
+*** Server app 
+**** Exposed layer: Web API .NET CORE -> READ, CREATE, UPDATE and DELETE web resource 
+**** Clean architecture: Doubts about persistance so separate infrastructure from application logic
+**** Use of command pattern: Invoker: converter service, Receiver:LinkConverterCommand
+**** Use of decorator pattern: Decorate a link component with functionality specific to the selected command: Single Responsability
+*** Design ER model
+**** Design main entities.
+**** Design access to database: Sql server authentication. Application user. Roles and Schema access.
+
+** Test phase: 
+*** TDD approach should be the right way. Covering each layer with unit test.
+*** Integration test to cover controller functionality. 
+*** Security test.
+**** Sql (Sql Injection => since no raw queries are made this shouldn't be a problem)
+**** XSS attacks.
+**** DDOS attacks. (Replication- failover strategy?)   
+@endwbs

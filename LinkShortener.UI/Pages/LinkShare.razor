@@ -73,7 +73,7 @@ else {
             <div class="form-group row mb-3" hidden="@DisableReturnField()">
                 <div class="col-sm-6 input-group">
                     <label class="col-sm-1 col-form-label">QR:</label>
-                    <img src="@link.ShortUrl" alt="QR" title="" />
+                    <img src="@link.ShortUrl" alt="QR" title="" class="mt-2" width="150" height="150"/>
                 </div>
             </div>
         }
@@ -93,7 +93,6 @@ else {
     private EditContext? editContext;
     private bool disableSave;
     private string errorMessage;
-    private bool displayQR = false;
     
     [Inject] IShortenerService shortenerService { get; set; } = default!;
     [Inject] private ToastService _toastService { get; set; } = default!;
@@ -120,7 +119,6 @@ else {
             if (shortLink is not null && shortLink.ShortUrl != null)
             {
                 link.ShortUrl = shortLink.ShortUrl;
-                displayQR = link.Format;
                 
                 var toastMessage = new ToastMessage
                 {

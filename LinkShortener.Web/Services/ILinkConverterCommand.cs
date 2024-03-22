@@ -1,6 +1,5 @@
 ﻿using LinkShortener.Application.Models;
 using LinkShortener.Application.Models.Dtos;
-using LinkShortener.Application.Services;
 
 namespace LinkShortener.Web.Services;
 

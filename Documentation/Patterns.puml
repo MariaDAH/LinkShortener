@@ -1,0 +1,46 @@
+﻿@startuml
+'https://plantuml.com/class-diagram
+
+class Controller
+interface ILinkConverterCommand {
+    ShareLink(Url url, int format): LinkDto
+}
+class LinkConverterCommand {
+   ShareLink(Url url, int format): LinkDto
+}
+class ConverterService {
+    ConvertLink(): LinkDto
+}
+interface ILink {
+    ConvertLink(): LinkDto
+}
+abstract class Link {
+    ConvertLink(): LinkDto
+}
+class TextLink {
+    ConvertLink()
+    ReturnLink(Url url): LinkDto
+}
+class QRLink {
+    ConvertLink()
+    ReturnLink(Url url): LinkDto
+}
+interface IQRGeneratorService {
+    GenerateQRService(string url)
+}
+class QRGeneratorService {
+    HttpClient client;
+    GenerateQRService(string url)
+}
+
+ILinkConverterCommand <.. LinkConverterCommand
+LinkConverterCommand <-- ConverterService
+ILink <-- Link
+Controller -> LinkConverterCommand
+ConverterService o-- ILink
+Link ^-- TextLink
+Link ^-- QRLink
+IQRGeneratorService <.. QRGeneratorService
+QRLink -> QRGeneratorService
+
+@enduml

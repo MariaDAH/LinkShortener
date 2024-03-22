@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener.Application", "LinkShortener.Application\LinkShortener.Application.csproj", "{E2B57C1D-E2EE-4F21-A6E9-96BDE60DB399}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortShare.Test", "LinkShortShare.Test\LinkShortShare.Test.csproj", "{6F0C22B0-68DA-4E5A-A8BE-8FC35A3DE1AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener.Test", "LinkShortener.Test\LinkShortener.Test.csproj", "{6F0C22B0-68DA-4E5A-A8BE-8FC35A3DE1AE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener.Web", "LinkShortener.Web\LinkShortener.Web.csproj", "{2D910DC2-57C5-4088-8526-28024258E715}"
 EndProject

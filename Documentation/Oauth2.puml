@@ -1,0 +1,15 @@
+﻿@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+ShortenerUI -> ShortenerIdentityServer: Authentication Request(clientId, redirect Uri, scope)
+ShortenerUI <-- ShortenerIdentityServer: Prompt user to authenticate and grant access
+ShortenerUI <-- ShortenerIdentityServer: Redirect user back to redirect URI with authorization code
+
+ShortenerUI -> ShortenerIdentityServer: Exchange authorization code for access token also using clientId and client secret
+ShortenerUI <-- ShortenerIdentityServer: Respond with access token
+
+ShortenerUI -> WebAPI: Request with access_token
+ShortenerUI <-- WebAPI: Response with data.
+@enduml
