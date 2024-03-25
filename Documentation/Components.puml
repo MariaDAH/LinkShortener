@@ -12,7 +12,6 @@ package "Web Api" {
 }
 
 package "Infrastructure" {
-   [ConverterService] 
    [ShortenerService.Infra] --> [UserService]
    [ShortenerService.Infra] --> [Uow]
    [UserService] --> [Uow]
@@ -24,8 +23,11 @@ package "Infrastructure" {
 
 package "Application logic" {
     frame Services {
-        [ILink] --> [QrLink]
-        [ILink] --> [TextLink]
+        [ILink] <.. [Link]
+        [Link] <|- [ConverterService]
+        [ConverterService] --> [ILink]
+        [ILink] <-- [QrLink]
+        [ILink] <-- [TextLink]
     }
     frame Entities {
       [Url]
@@ -48,6 +50,5 @@ database "SqlServer" {
 [ShortenerService] --> [ShortLinkController]
 [DataAccess] --> [LinkShortenerDb]
 [ILinkConverterCommand] --> [ConverterService]
-[ConverterService] --> [ILink]
 [ShortLinkController] --> [ShortenerService.Infra]
 @enduml
